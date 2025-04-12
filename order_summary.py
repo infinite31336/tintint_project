@@ -83,18 +83,17 @@ def check_order_consistency(orders, order_items):
         for item in items:
             if item["price"] < 0:
                 check_results.append(f'項目 {item['item_id']} 價格為負: {item['price']}')
-            if order_date < datetime.strptime(order_date['order_date'], '%Y-%m-%d'):
+            if order_date < datetime.strptime(order['order_date'], '%Y-%m-%d'):
                 check_results.append('訂單日期早於項目創建時間')
             calculated_amount += item['quantity'] * item['price']
         if calculated_amount != total_amount:
             check_results.append(f'總金額不符: 應為 {calculated_amount}, 實際為 {total_amount}')
 
-        response.append({'order_id': order_id, 'check_results': '\n'.join(check_results) if check_results else '結果一致'})
+        response.append({'order_id': order_id, 'check_results': ','.join(check_results) if check_results else '結果一致'})
 
     return response
 
 if __name__ == "__main__":
-    app.run(debug=True)
 
     test_orders = [
         {"order_id": 1, "order_date": "2025-01-11", "total_amount": 1300},
@@ -116,4 +115,5 @@ if __name__ == "__main__":
     print("一致性檢查結果:")
     results = check_order_consistency(test_orders, test_items)
     for r in results:
-        print(f"Order {r['order_id']}: {r['issues']}")
+        print(f"Order {r['order_id']}: {r['check_results']}")
+    app.run(debug=True)
